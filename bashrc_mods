@@ -1,0 +1,15 @@
+## THIS IS A LIST OF STUFF YOU CAN ADD TO YOUR .bashrc TO MAKE LIFE REALLY EASY!
+
+## A personal rm  function that protects you from accidentally doing rm *
+## I often, in my hurry to finish something, type something like 
+## rm /path/prefix_ *
+##				   ^
+function rm() {
+  python /Users/arjun/temp/test_fix_rm.py $@
+  if [ $? -eq 1 ]
+  then
+    echo "ERROR: You lose 1 programmer point for running rm *"
+    return 1
+  fi
+  /bin/rm $@
+}

@@ -1,0 +1,48 @@
+#!/usr/bin/env python2.7
+'''
+Author : Arjun Arkal Rao
+Affiliation : UCSC BME, UCSC Genomics Institute
+File : pro_life_tips/star_in_CL_args
+
+Program info can be found in the docstring of the main function
+'''
+import os
+import argparse
+import sys
+
+def main():
+    '''
+    This program is to be used with the rm function defined in
+    pro_life_tips/bashrc_mods .  It is used to check whether the user attempted
+    to do an
+            rm *
+    operation by mistake. This mistake most commonly occurs when the user adds a
+    space before the star while typing furiously. If you TRULY REALLY wanted to
+    empty the folder, you could use
+            rm ./* 
+
+    Shell by default expands the * before it reaches the rm function.  This
+    program obtains a listdir of the current directory and compares it to the
+    expansion of * passed to rm.
+    '''
+    #  Capture the entire command line arg set sent to rm ($@) into a variable
+    parser = argparse.ArgumentParser(description=main.__doc__)
+    parser.add_argument('CLA', help='Command Line Args', nargs='+')
+    params = parser.parse_args()
+
+    #  Obtain the list of files in the current dir
+    curr_dir = {x for x in os.listdir('.') if not x.startswith('.')}
+    CLA = set(params.CLA)
+
+    #  This set difference will return True iff ALL elements in the current dir
+    #  are in the command line arguments.  Using rm ./* will cause CLA to prefix
+    #  ./ to all the files that orifinate from the current dir and that will
+    #  bypass this.
+    if curr_dir.issubset(CLA):
+        sys.exit(1)
+    else:
+        sys.exit(0)
+
+if __name__ == '__main__':
+	main()
+
