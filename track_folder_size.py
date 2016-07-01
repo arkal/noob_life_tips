@@ -30,7 +30,7 @@ def trackDirSizes(workDir, outfile):
                     for fileName, fileSize in dirFiles.items():
                         if fileSize > dirs[dirPath]['files'][fileName]:
                             dirs[dirPath]['files'][fileName] = fileSize
-            dirsViewed.add(dirPath)
+                dirsViewed.add(dirPath)
         completedJobs = set(dirs.keys()) - dirsViewed
         for job in completedJobs:
             with open(outfile, 'a') as outFH:
@@ -40,7 +40,7 @@ def trackDirSizes(workDir, outfile):
         if len(dirsViewed) == 0:
             strikes += 1
             if strikes == 3:
-                print('Done.\n\n RUN COMPLETED')
+                print('Done.\n\nStrike %s... You\'re out!' % strikes)
                 break
         else:
             strikes = 0
@@ -79,7 +79,7 @@ def _getDirSize(dirPath, fileNames):
     for f in fileNames:
         fp = os.path.join(dirPath, f)
         try:
-            fileStats = os.stat(fp)
+            fileStats = os.lstat(fp)
         except OSError as err:
             if err.errno == 2:
                 # This means the file got deleted while we were reading it
@@ -94,6 +94,7 @@ def parseOutput(infile, outfile):
     """
     Parse the output from trackDirSizes
     """
+    print('Parsing output')
     with open(infile) as inFH, open(outfile, 'w') as outFH:
         for line in inFH:
             linedict = json.loads(line)
@@ -115,3 +116,4 @@ if __name__ == '__main__':
     open(params.outfile_prefix + '_raw.txt', 'w').close()
     trackDirSizes(params.workDir, params.outfile_prefix + '_raw.txt')
     parseOutput(params.outfile_prefix + '_raw.txt', params.outfile_prefix + '_filtered.tsv')
+    print('Run Completed')
